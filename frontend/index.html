@@ -8,6 +8,18 @@
 <body>
   <div id="app"></div>
 
+  <div class="controls">
+    <div class="mode-switch">
+      <label for="modeToggle">Auto (DB)</label>
+      <label class="switch">
+        <input type="checkbox" id="modeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <input type="number" id="phaseInput" placeholder="Enter phase angle" step="0.1" />
+    <button id="applyButton">Apply</button>
+  </div>
+
   <script type="importmap">
   {
     "imports": {

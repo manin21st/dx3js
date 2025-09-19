@@ -30,3 +30,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 .idea/
+
+# Custom - Ignore sensitive configuration files
+# 원본 설정 파일과 암호화 키는 Git에서 제외합니다.
+# 암호화된 config.ini.enc 파일은 Git에 포함됩니다.
+backend/config.ini
+backend/secret.key
