@@ -25,8 +25,9 @@ from cryptography.fernet import Fernet
 #       찾지 못해 'DPI-1047'과 같은 오류를 발생시켰습니다.
 # 해결: oracledb.init_oracle_client()를 사용하여 코드 내에서 직접 Instant Client의
 #       라이브러리 디렉토리(lib_dir) 경로를 지정해주어 문제를 해결했습니다.
+# 주의: 클라우드서버를 사용하는 경우 python-oracledb 는 기본이 Thin 모드라서 주석처리
 # -------------------------------------------------------------------------------------
-oracledb.init_oracle_client(lib_dir=r"C:\instantclient_19_27")
+# oracledb.init_oracle_client(lib_dir=r"C:\instantclient_19_27")
 
 app = Flask(__name__)
 
