@@ -102,6 +102,14 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
+@app.route("/")
+def index():
+    return "dx3js backend OK", 200
+
+@app.route("/healthz")
+def healthz():
+    return jsonify(status="ok"), 200
+
 @app.route("/api/phase")
 def get_phase():
     """ZSCORE 테이블에서 랜덤한 위상각(CAM1) 데이터를 조회하여 JSON으로 반환합니다."""
