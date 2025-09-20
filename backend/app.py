@@ -27,7 +27,11 @@ from cryptography.fernet import Fernet
 #       라이브러리 디렉토리(lib_dir) 경로를 지정해주어 문제를 해결했습니다.
 # 주의: 클라우드서버를 사용하는 경우 python-oracledb 는 기본이 Thin 모드라서 주석처리
 # -------------------------------------------------------------------------------------
+# 로컬 개발 환경용 (Windows C:\instantclient_19_27)
 # oracledb.init_oracle_client(lib_dir=r"C:\instantclient_19_27")
+
+# 클라우드 서버용 (Linux /opt/oracle/instantclient/instantclient_19_28)
+oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_19_28")
 
 app = Flask(__name__)
 
