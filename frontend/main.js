@@ -251,7 +251,11 @@ async function updatePhaseFromDB() {
         currentPhaseAngle = angle;
         phaseInput.value = angle.toFixed(1); // 입력 필드 업데이트 (이 부분은 패널로 대체)
         drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
-        // rotateConveyorBelt(currentPhaseAngle); // 모델 회전
+        
+        // 현재 로드된 모델이 'scene.glb'일 경우에만 회전 적용
+        if (modelSelector.value === 'scene.glb') {
+            rotateConveyorBelt(currentPhaseAngle); // 모델 회전
+        }
     } else {
         console.warn("DB에서 위상각 데이터를 가져오지 못했습니다.");
         phaseInput.value = '--'; // 데이터 없을 시 '--' 표시 (이 부분은 패널로 대체)
@@ -281,7 +285,11 @@ applyButton.addEventListener('click', () => {
     const angle = parseFloat(phaseInput.value);
     if (!isNaN(angle)) {
         currentPhaseAngle = angle;
-        rotateConveyorBelt(currentPhaseAngle);
+        
+        // 현재 로드된 모델이 'scene.glb'일 경우에만 회전 적용
+        if (modelSelector.value === 'scene.glb') {
+            rotateConveyorBelt(currentPhaseAngle);
+        }
         drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
         stopAutoUpdate(); // 수동 적용 시 자동 업데이트 중지
         modeToggle.checked = false; // 토글 상태 변경
@@ -308,6 +316,6 @@ panelMesh = createPanel();
 scene.add(panelMesh);
 // 패널 위치는 카메라 위치에 따라 동적으로 조정될 수 있도록 animate 루프에서 처리하거나,
 // 모델 로드 후 모델의 크기에 따라 조정하는 로직이 필요할 수 있습니다.
-// 여기서는 임시로 고정 위치를 설정합니다.
+// 여기서는 임시로 고정 위치를 설정합니다。
 panelMesh.position.set(0, 1.5, -2); // 예시 위치 (카메라 앞에 배치)
 panelMesh.lookAt(camera.position); // 카메라를 바라보도록 설정
