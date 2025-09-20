@@ -169,6 +169,57 @@ animate();
 // [위상각 데이터 업데이트 및 모델 제어 로직]
 // =====================================================================================
 
+let panelMesh; // 위상각을 표시할 패널 (메쉬)
+
+// ----- 패널 생성 (createPanel) -----
+// Canvas에 2D 텍스트를 그린 다음, 이를 3D 공간의 평면(Plane)에 텍스처로 적용하는 방식입니다.
+function createPanel() {
+  const canvas = document.createElement("canvas"); // 2D 그림을 그릴 캔버스 생성
+  canvas.width = 512; canvas.height = 256;
+  const ctx = canvas.getContext("2d"); // 캔버스에 그림을 그릴 때 사용하는 2D 컨텍스트
+  
+  // CanvasTexture는 캔버스의 내용을 Three.js 텍스처로 사용할 수 있게 합니다.
+  const tex = new THREE.CanvasTexture(canvas);
+  // MeshBasicMaterial은 조명에 영향을 받지 않는 기본 재질입니다.
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
+  // PlaneGeometry는 평평한 사각형 메시를 생성합니다.
+  const geo = new THREE.PlaneGeometry(1.2, 0.6);
+  // 최종적으로 메시(도형+재질)를 생성합니다.
+  const mesh = new THREE.Mesh(geo, mat);
+  // 나중에 캔버스에 다시 그릴 수 있도록 관련 객체들을 userData에 저장합니다.
+  mesh.userData = { canvas, ctx, tex };
+  return mesh;
+}
+
+// ----- 패널 그리기 (drawPanel) -----
+// 캔버스에 위상각, 상태 등을 포함하여 그립니다.
+function drawPanel(mesh, angle, status="OK") {
+  if (!mesh) return;
+  const { canvas, ctx, tex } = mesh.userData;
+  const w = canvas.width, h = canvas.height;
+
+  // 캔버스를 지웁니다.
+  ctx.clearRect(0, 0, w, h);
+  // 상태(ALARM, WARN, OK)에 따라 배경색을 다르게 설정합니다.
+  ctx.fillStyle = (status==="ALARM") ? "rgba(220,32,32,0.9)"
+                 : (status==="WARN") ? "rgba(255,165,0,0.9)"
+                 : "rgba(20,24,36,0.92)";
+  ctx.fillRect(0,0,w,h);
+
+  // 텍스트를 그립니다.
+  ctx.fillStyle="#fff";
+  ctx.font="bold 64px system-ui";
+  const text = angle!==null ? `${angle.toFixed(2)}째` : "--";
+  const tw = ctx.measureText(text).width;
+  ctx.fillText(text, (w-tw)/2, h/2+20);
+
+  ctx.font="28px system-ui";
+  ctx.fillText("PHASE ANGLE", 30, 40);
+
+  // 캔버스 내용이 변경되었으므로 텍스처를 업데이트하라고 Three.js에 알립니다.
+  tex.needsUpdate = true;
+}
+
 // HTML 요소 참조
 const phaseInput = document.getElementById('phaseInput');
 const applyButton = document.getElementById('applyButton');
@@ -198,11 +249,13 @@ async function updatePhaseFromDB() {
     const angle = await fetchPhase();
     if (angle !== null) {
         currentPhaseAngle = angle;
-        phaseInput.value = angle.toFixed(1); // 입력 필드 업데이트
-        rotateConveyorBelt(currentPhaseAngle); // 모델 회전
+        phaseInput.value = angle.toFixed(1); // 입력 필드 업데이트 (이 부분은 패널로 대체)
+        drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
+        // rotateConveyorBelt(currentPhaseAngle); // 모델 회전
     } else {
         console.warn("DB에서 위상각 데이터를 가져오지 못했습니다.");
-        phaseInput.value = '--'; // 데이터 없을 시 '--' 표시
+        phaseInput.value = '--'; // 데이터 없을 시 '--' 표시 (이 부분은 패널로 대체)
+        drawPanel(panelMesh, null, "DISCONNECTED"); // 패널 업데이트
     }
 }
 
@@ -229,6 +282,7 @@ applyButton.addEventListener('click', () => {
     if (!isNaN(angle)) {
         currentPhaseAngle = angle;
         rotateConveyorBelt(currentPhaseAngle);
+        drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
         stopAutoUpdate(); // 수동 적용 시 자동 업데이트 중지
         modeToggle.checked = false; // 토글 상태 변경
     } else {
@@ -248,3 +302,12 @@ modeToggle.addEventListener('change', () => {
 // 초기 로드 시 자동 업데이트 시작 (기본값)
 modeToggle.checked = true; // 자동 업데이트 모드 활성화
 startAutoUpdate();
+
+// 패널 초기화 및 위치 설정
+panelMesh = createPanel();
+scene.add(panelMesh);
+// 패널 위치는 카메라 위치에 따라 동적으로 조정될 수 있도록 animate 루프에서 처리하거나,
+// 모델 로드 후 모델의 크기에 따라 조정하는 로직이 필요할 수 있습니다.
+// 여기서는 임시로 고정 위치를 설정합니다.
+panelMesh.position.set(0, 1.5, -2); // 예시 위치 (카메라 앞에 배치)
+panelMesh.lookAt(camera.position); // 카메라를 바라보도록 설정
