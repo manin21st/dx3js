@@ -68,16 +68,18 @@ let currentModel = null;
 
 // GLB 모델 로드 함수
 async function loadModel(modelPath) {
+    console.log(`loadModel: ${modelPath} 로드 시작...`);
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader();
         loader.load(
             modelPath,
             (gltf) => {
+                console.log(`loadModel: ${modelPath} 로드 성공. GLTF Scene:`, gltf.scene);
                 resolve(gltf.scene);
             },
             undefined,
             (error) => {
-                console.error('모델 로드 중 오류 발생:', error);
+                console.error(`loadModel: ${modelPath} 로드 중 오류 발생:`, error);
                 reject(error);
             }
         );
@@ -86,7 +88,9 @@ async function loadModel(modelPath) {
 
 // 모델 전환 함수
 async function switchModel(modelPath) {
+    console.log(`switchModel: ${modelPath} 로드 요청됨.`);
     if (currentModel) {
+        console.log('switchModel: 이전 모델 제거 중...', currentModel);
         scene.remove(currentModel);
         currentModel.traverse((object) => {
             if (object.isMesh) {
@@ -106,9 +110,9 @@ async function switchModel(modelPath) {
         const newModel = await loadModel(modelPath);
         scene.add(newModel);
         currentModel = newModel;
-        console.log(`모델 로드 완료: ${modelPath}`);
+        console.log(`switchModel: 모델 로드 완료 및 씬에 추가됨: ${modelPath}`, newModel);
     } catch (error) {
-        console.error(`모델 ${modelPath} 로드 실패:`, error);
+        console.error(`switchModel: 모델 ${modelPath} 로드 실패:`, error);
     }
 }
 
@@ -117,12 +121,14 @@ const modelSelector = document.getElementById('modelSelector');
 if (modelSelector) {
     modelSelector.addEventListener('change', (event) => {
         const selectedModel = event.target.value;
+        console.log(`modelSelector: ${selectedModel} 선택됨.`);
         switchModel(selectedModel);
     });
 }
 
 // 초기 모델 로드 (드롭다운의 기본값)
 const initialModel = modelSelector ? modelSelector.value : 'scene.glb';
+console.log(`초기 모델 로드: ${initialModel}`);
 switchModel(initialModel);
 
 // 윈도우 리사이즈 이벤트 처리
