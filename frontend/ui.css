@@ -21,6 +21,14 @@ html, body {
   border-radius: 8px;
   align-items: center;
 }
+
+.model-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+}
+
 #phaseInput {
   width: 150px;
   padding: 8px;
