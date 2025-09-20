@@ -65,6 +65,8 @@ draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.165/examples/jsm/libs
 loader.setDRACOLoader(draco);
 
 let currentModel = null;
+let mixer = null; // AnimationMixer
+const clock = new THREE.Clock(); // Clock for mixer updates
 
 // GLB 모델 로드 함수
 async function loadModel(modelPath) {
@@ -75,6 +77,19 @@ async function loadModel(modelPath) {
             modelPath,
             (gltf) => {
                 console.log(`loadModel: ${modelPath} 로드 성공. GLTF Scene:`, gltf.scene);
+                
+                // 애니메이션 처리
+                if (gltf.animations && gltf.animations.length) {
+                    mixer = new THREE.AnimationMixer(gltf.scene);
+                    gltf.animations.forEach((clip) => {
+                        mixer.clipAction(clip).play();
+                    });
+                    console.log(`loadModel: ${gltf.animations.length}개 애니메이션 클립 재생 시작.`);
+                } else {
+                    mixer = null; // 애니메이션이 없으면 믹서 초기화
+                    console.log(`loadModel: ${modelPath}에 애니메이션 클립이 없습니다.`);
+                }
+
                 resolve(gltf.scene);
             },
             undefined,
@@ -142,6 +157,10 @@ window.addEventListener('resize', () => {
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
+    // 믹서 업데이트
+    if (mixer) {
+        mixer.update(clock.getDelta());
+    }
     renderer.render(scene, camera);
 }
 animate();
