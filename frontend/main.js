@@ -1,3 +1,4 @@
+alert("This is the new main.js file!");
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -251,8 +252,8 @@ async function updatePhaseFromDB() {
         currentPhaseAngle = angle;
         drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
         
-        // 현재 로드된 모델이 'scene.glb'일 경우에만 회전 적용
-        if (modelSelector.value === 'scene.glb') {
+        // 현재 로드된 모델이 'Conveyor Belt2.glb'일 경우에만 회전 적용
+        if (modelSelector.value === 'Conveyor Belt2.glb') {
             rotateConveyorBelt(currentPhaseAngle); // 모델 회전
         }
     } else {
@@ -284,8 +285,8 @@ applyButton.addEventListener('click', () => {
     if (!isNaN(angle)) {
         currentPhaseAngle = angle;
         
-        // 현재 로드된 모델이 'scene.glb'일 경우에만 회전 적용
-        if (modelSelector.value === 'scene.glb') {
+        // 현재 로드된 모델이 'Conveyor Belt2.glb'일 경우에만 회전 적용
+        if (modelSelector.value === 'Conveyor Belt2.glb') {
             rotateConveyorBelt(currentPhaseAngle);
         }
         drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
