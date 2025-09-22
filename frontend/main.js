@@ -209,7 +209,7 @@ function drawPanel(mesh, angle, status="OK") {
   // 텍스트를 그립니다.
   ctx.fillStyle="#fff";
   ctx.font="bold 64px system-ui";
-  const text = angle!==null ? `${angle.toFixed(2)}째` : "--";
+  const text = angle!==null ? `${angle.toFixed(2)}` : "--";
   const tw = ctx.measureText(text).width;
   ctx.fillText(text, (w-tw)/2, h/2+20);
 
@@ -249,7 +249,6 @@ async function updatePhaseFromDB() {
     const angle = await fetchPhase();
     if (angle !== null) {
         currentPhaseAngle = angle;
-        phaseInput.value = angle.toFixed(1); // 입력 필드 업데이트 (이 부분은 패널로 대체)
         drawPanel(panelMesh, currentPhaseAngle, "OK"); // 패널 업데이트
         
         // 현재 로드된 모델이 'scene.glb'일 경우에만 회전 적용
@@ -258,7 +257,6 @@ async function updatePhaseFromDB() {
         }
     } else {
         console.warn("DB에서 위상각 데이터를 가져오지 못했습니다.");
-        phaseInput.value = '--'; // 데이터 없을 시 '--' 표시 (이 부분은 패널로 대체)
         drawPanel(panelMesh, null, "DISCONNECTED"); // 패널 업데이트
     }
 }
@@ -308,8 +306,7 @@ modeToggle.addEventListener('change', () => {
 });
 
 // 초기 로드 시 자동 업데이트 시작 (기본값)
-modeToggle.checked = true; // 자동 업데이트 모드 활성화
-startAutoUpdate();
+modeToggle.checked = false; // 자동 업데이트 모드 비활성화
 
 // 패널 초기화 및 위치 설정
 panelMesh = createPanel();
